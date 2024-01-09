@@ -1,0 +1,9 @@
+version: "2"
+authtoken: authtoken
+tunnels:
+  bap-network-ps:
+    proto: http
+    addr: 7000
+  bpp-network-ps:
+    proto: http
+    addr: 8000
