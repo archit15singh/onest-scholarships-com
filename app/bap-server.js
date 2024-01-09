@@ -16,12 +16,18 @@ app.use(express.json());
 app.use(logRequestDetails);
 
 app.post("/on_subscribe", (req, res) => {
-  console.log("Received a subscription request:", req.body);
+  console.log(
+    "Received a subscription request:",
+    JSON.stringify(req.body, null, 2)
+  );
   res.status(200).send({ message: "Subscription successful" });
 });
 
 app.post("/client_callback", (req, res) => {
-  console.log("Received a response for client_callback:", req.body);
+  console.log(
+    "Received a response for client_callback:",
+    JSON.stringify(req.body, null, 2)
+  );
   res.status(200).send({ message: "successful" });
 });
 
