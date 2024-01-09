@@ -161,3 +161,5 @@ cython_debug/
 node_modules
 data
 .DS_Store
+default.yml
+keys.json
