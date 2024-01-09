@@ -3,7 +3,6 @@ const axios = require("axios");
 const app = express();
 const port = 3000;
 
-// Middleware to log request details
 function logRequestDetails(req, res, next) {
   console.log(`Received a request on ${req.path}`);
   console.log("Headers:", JSON.stringify(req.headers, null, 2));
@@ -12,10 +11,8 @@ function logRequestDetails(req, res, next) {
   next();
 }
 
-// Use express.json() to parse incoming requests with JSON payloads
 app.use(express.json());
 
-// Use the logRequestDetails middleware
 app.use(logRequestDetails);
 
 app.post("/on_subscribe", (req, res) => {
