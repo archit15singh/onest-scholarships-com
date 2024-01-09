@@ -6,152 +6,116 @@ app.use(express.json());
 
 const items = {
   context: {
-    ttl: "PT10M",
-    action: "search",
-    timestamp: "2024-01-04T14:01:23.741Z",
-    message_id: "d4e82f98-ef50-4d3b-9835-2c5d3b2c9c5e",
-    transaction_id: "f2c4ec4a-22f8-4b8b-82fc-ef23d5f92b7d",
     domain: "onest:financial-support",
-    version: "1.2.0",
-    bap_id: "fs-ps-bap-network.onest.network",
-    bap_uri: "https://fs-ps-bap-network.onest.network/",
+    action: "on_search",
+    version: "1.1.0",
+    bpp_id: "a8d2-2405-201-800b-c21a-2538-43c5-6514-4340.ngrok-free.app",
+    bpp_uri:
+      "https://a8d2-2405-201-800b-c21a-2538-43c5-6514-4340.ngrok-free.app/",
+    country: "IND",
+    city: "std:011",
     location: {
       city: {
-        name: "Mumbai",
-        code: "std:022",
+        name: "New Delhi",
+        code: "std:011",
       },
       country: {
         name: "India",
         code: "IND",
       },
     },
+    transaction_id: "d4bbfcca-12c7-4e19-a540-b057a7c70009",
+    message_id: "894310e5-8cb2-427d-ac28-c1cfc7551edc",
+    ttl: "PT15M",
+    timestamp: "2024-01-09T14:36:46.258Z",
   },
-  responses: [
-    {
-      context: {
-        domain: "onest:financial-support",
-        action: "on_search",
-        version: "1.2.0",
-        bpp_id: "beckn-sandbox-bpp.becknprotocol.io",
-        bpp_uri: "https://sandbox-bpp-network.becknprotocol.io/",
-        country: "IND",
-        city: "std:022",
-        location: {
-          city: {
-            name: "Mumbai",
-            code: "std:022",
-          },
-          country: {
-            name: "India",
-            code: "IND",
-          },
-        },
-        bap_id: "fs-ps-bap-network.onest.network",
-        bap_uri: "https://fs-ps-bap-network.onest.network/",
-        transaction_id: "f2c4ec4a-22f8-4b8b-82fc-ef23d5f92b7d",
-        message_id: "d4e82f98-ef50-4d3b-9835-2c5d3b2c9c5e",
-        ttl: "PT10M",
-        timestamp: "2024-01-04T14:01:31.780Z",
+  message: {
+    catalog: {
+      descriptor: {
+        name: "National Tarka Scholarship Portal - BPP Platform",
       },
-      message: {
-        catalog: {
+      providers: [
+        {
+          id: "NSP213580001",
           descriptor: {
-            name: "Aspire Higher Education Scholarship Platform",
+            name: "Indian Tarka Government Education Scholarship",
           },
-          providers: [
+          categories: [
             {
-              id: "HE205578912",
+              id: "NSP_CAT_2",
               descriptor: {
-                name: "ABC Scholarship Foundation",
+                code: "ug",
+                name: "Under Graduate",
               },
-              categories: [
-                {
-                  id: "DSEP_CAT_1",
-                  descriptor: {
-                    code: "ug",
-                    name: "Under Graduate",
-                  },
-                },
-              ],
-              fulfillments: [
-                {
-                  id: "HE_FUL_84759301",
-                  type: "GRANT",
-                  tracking: true,
-                  contact: {
-                    phone: "9123456780",
-                    email: "contact@abc-foundation.org",
-                  },
-                  stops: [
-                    {
-                      type: "APPLICATION-START",
-                      time: {
-                        timestamp: "2024-04-01T00:00:00.000Z",
-                      },
-                    },
-                    {
-                      type: "APPLICATION-END",
-                      time: {
-                        timestamp: "2024-06-30T00:00:00.000Z",
-                      },
-                    },
-                  ],
-                },
-              ],
-              items: [
-                {
-                  id: "GRANT_84759301",
-                  descriptor: {
-                    name: "ABC Postgraduate Research Grant",
-                    long_desc:
-                      "A grant aimed at supporting postgraduate research in science and technology fields.",
-                  },
-                  price: {
-                    currency: "INR",
-                    value: "50000",
-                  },
-                  rateable: false,
-                  tags: [
-                    {
-                      display: true,
-                      descriptor: {
-                        code: "field-of-study",
-                        name: "Field of Study",
-                      },
-                      list: [
-                        {
-                          descriptor: {
-                            code: "study-area",
-                            name: "Area of Study",
-                          },
-                          value: "Science and Technology",
-                          display: true,
-                        },
-                      ],
-                    },
-                  ],
-                  category_ids: ["HE_CAT_2"],
-                  fulfillment_ids: ["HE_FUL_84759301"],
-                },
-              ],
-              rateable: true,
             },
           ],
+          fulfillments: [
+            {
+              id: "NSP_FUL_64587601",
+              type: "SCHOLARSHIP",
+              tracking: false,
+              contact: {
+                phone: "9123456780",
+                email: "scholarship@nsp.gov.in",
+              },
+              stops: [
+                {
+                  type: "APPLICATION-START",
+                  time: {
+                    timestamp: "2023-08-01T00:00:00.000Z",
+                  },
+                },
+                {
+                  type: "APPLICATION-END",
+                  time: {
+                    timestamp: "2023-11-30T00:00:00.000Z",
+                  },
+                },
+              ],
+            },
+          ],
+          items: [
+            {
+              id: "NSP_SCH_64587601",
+              descriptor: {
+                name: "Indian Tarka Government Scholarship for Undergraduate Students",
+                long_desc:
+                  "This scholarship aims to support meritorious postgraduate students across India.",
+              },
+              price: {
+                currency: "INR",
+                value: "30000",
+              },
+              rateable: false,
+              tags: [
+                {
+                  display: true,
+                  descriptor: {
+                    code: "benefits",
+                    name: "Benefits",
+                  },
+                  list: [
+                    {
+                      descriptor: {
+                        code: "scholarship-amount",
+                        name: "Scholarship Amount",
+                      },
+                      value: "Upto Rs.30000 per year",
+                      display: true,
+                    },
+                  ],
+                },
+              ],
+              category_ids: ["NSP_CAT_2"],
+              fulfillment_ids: ["NSP_FUL_64587601"],
+            },
+          ],
+          rateable: false,
         },
-      },
+      ],
     },
-  ],
+  },
 };
-
-function logRequestDetails(req, res, next) {
-  console.log(`Received a request on ${req.path}`);
-  console.log("Headers:", JSON.stringify(req.headers, null, 2));
-  console.log("Query Parameters:", JSON.stringify(req.query, null, 2));
-  console.log("Body:", JSON.stringify(req.body, null, 2));
-  next();
-}
-
-app.use(logRequestDetails);
 
 app.post("/client_callback", (req, res) => {
   res.status(200).json(items);
