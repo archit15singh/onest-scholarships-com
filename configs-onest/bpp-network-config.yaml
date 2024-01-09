@@ -1,0 +1,80 @@
+# Mandatory
+server:
+  port: 8000
+
+# Mandatory.
+cache:
+  host: "localhost"
+  port: 6379
+  ttl: "PT10M"
+  # Optional. Default is 0.
+  db: 1
+
+# Optional.
+responseCache:
+  mongoURL: "mongodb://tarkalabs:password@localhost:27017/protocol_server-v2?authSource=admin"
+  ttl: "PT10M"
+
+# Mandatory.
+# Priority order will be
+# 1. Synchronous
+# 2. webhook
+# 3. pubSub
+client:
+  # synchronous: 
+  #   mongoURL: "mongodb://tarkalabs:password@localhost:27017/protocol_server-v2?authSource=admin"
+
+  webhook:
+    url: "http://localhost:4000"
+  
+  # messageQueue: 
+  #   amqpURL: "amqp://guest:guest@localhost:5672"
+  #   incomingQueue: "protocol-server-incoming"
+  #   outgoingQueue: "protocol-server-outgoing"
+
+# Mandatory.
+app:
+  # Mandatory.
+  mode: bpp
+
+  # Two types of gateway mode present.
+  # client and network.
+  gateway:
+    mode: network
+    inboxQueue: "inbox"
+    outboxQueue: "outbox"
+    amqpURL: "amqp://tarkalabs:password@localhost:5672"
+
+  # Mandatory.
+  actions:
+    requests:
+      search:
+        ttl : "PT15S"
+
+    responses: 
+      on_search:
+        ttl: "PT15S"
+  
+  # Mandatory.
+  privateKey: "3PNpNiv9FURWsWr6hgDSlJO6Y0DKJfJZwhQv68arES3iiyAJex1VbAsCVlN9ZxykUhAgnm0i4gKFApgtxYdIug=="
+  publicKey: "4osgCXsdVWwLAlZTfWccpFIQIJ5tIuIChQKYLcWHSLo="
+
+  # Mandatory.
+  subscriberId: "5006-2405-201-800b-c21a-24dd-42f3-45c8-8e07.ngrok-free.app"
+  subscriberUri: "https://5006-2405-201-800b-c21a-24dd-42f3-45c8-8e07.ngrok-free.app"
+  
+  # Mandatory.
+  registryUrl: https://sandbox.onest.network/onest
+  auth: true
+  uniqueKey: "c3921fdb-f857-4ebf-8ada-a60e71f53a5a"
+  
+  # Mandatory.
+  city: "std:080"
+  country: "IND"
+
+  # Mandatory.
+  ttl: "PT10M"
+
+  # Mandatory.
+  httpTimeout: "PT3S"
+  httpRetryCount: 2
