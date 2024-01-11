@@ -45,9 +45,10 @@ def find_date(fulfillments, type):
     for fulfillment in fulfillments:
         for stop in fulfillment["stops"]:
             if stop["type"] == type:
-                return datetime.fromisoformat(stop["time"]["timestamp"]).strftime(
-                    "%Y-%m-%d"
-                )
+                timestamp = stop["time"]["timestamp"]
+                if timestamp.endswith("Z"):
+                    timestamp = timestamp[:-1] + "+00:00"
+                return datetime.fromisoformat(timestamp).strftime("%Y-%m-%d")
     return "Not specified"
 
 
