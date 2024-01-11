@@ -43,7 +43,10 @@ app.post("/search", async (req, res) => {
       requestData
     );
 
-    console.log("got the data from /search", response.data);
+    console.log(
+      "got the data from /search",
+      JSON.stringify(response.data, null, 2)
+    );
     res.json(response.data);
   } catch (error) {
     console.error("Error calling external API", error);
