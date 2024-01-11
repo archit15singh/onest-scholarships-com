@@ -3,6 +3,64 @@ const axios = require("axios");
 const app = express();
 const port = 3000;
 
+function processResponse(data) {
+  if (!data || !data.responses || !Array.isArray(data.responses)) {
+    console.error("Invalid data structure");
+    return;
+  }
+
+  data.responses.forEach((response) => {
+    const providers = response.message?.catalog?.providers;
+    if (!providers || !Array.isArray(providers)) {
+      console.error("Invalid or missing providers array in response");
+      return;
+    }
+
+    providers.forEach((provider) => {
+      console.log(`Provider: ${provider.descriptor.name}`);
+      provider.items.forEach((item) => {
+        console.log(`  Scholarship Name: ${item.descriptor.name}`);
+        console.log(`  Description: ${item.descriptor.long_desc}`);
+        console.log(`  Amount: ${item.price.value} ${item.price.currency}`);
+        item.tags.forEach((tag) => {
+          console.log(`  Tag - ${tag.descriptor.name}:`);
+          tag.list.forEach((listItem) => {
+            console.log(`    ${listItem.descriptor.name}: ${listItem.value}`);
+          });
+        });
+        console.log(
+          `  Application Start: ${findDate(
+            provider.fulfillments,
+            "APPLICATION-START"
+          )}`
+        );
+        console.log(
+          `  Application End: ${findDate(
+            provider.fulfillments,
+            "APPLICATION-END"
+          )}`
+        );
+        console.log("");
+      });
+    });
+  });
+}
+
+function findDate(fulfillments, type) {
+  if (!fulfillments || !Array.isArray(fulfillments)) {
+    return "Not specified";
+  }
+
+  for (let fulfillment of fulfillments) {
+    for (let stop of fulfillment.stops) {
+      if (stop.type === type) {
+        return new Date(stop.time.timestamp).toLocaleDateString();
+      }
+    }
+  }
+  return "Not specified";
+}
+
 function logRequestDetails(req, res, next) {
   console.log(`Received a request on ${req.path}`);
   console.log("Headers:", JSON.stringify(req.headers, null, 2));
@@ -47,6 +105,7 @@ app.post("/search", async (req, res) => {
       "got the data from /search",
       JSON.stringify(response.data, null, 2)
     );
+    processResponse(response.data);
     res.json(response.data);
   } catch (error) {
     console.error("Error calling external API", error);
