@@ -52,6 +52,57 @@ def find_date(fulfillments, type):
     return "Not specified"
 
 
+def print_human_readable(json_object):
+    """
+    This function takes a JSON object and prints its contents in a human-readable format,
+    focusing on individual items.
+    """
+    context = json_object["context"]
+    responses = json_object["responses"]
+
+    # Print context information
+    print("Context:")
+    print(f"  Action: {context['action']}")
+    print(f"  Message ID: {context['message_id']}")
+    print(f"  Transaction ID: {context['transaction_id']}")
+    print(f"  Domain: {context['domain']}")
+    print(
+        f"  Location: {context['location']['city']['name']}, {context['location']['country']['name']}"
+    )
+    print()
+
+    # Iterate through responses
+    for response in responses:
+        print("Response:")
+        response_context = response["context"]
+        message = response["message"]
+
+        # Print response context information
+        print(f"  Domain: {response_context['domain']}")
+        print(f"  Action: {response_context['action']}")
+        print(f"  Provider ID: {response_context['bpp_id']}")
+        print(
+            f"  Location: {response_context['location']['city']['name']}, {response_context['location']['country']['name']}"
+        )
+        print()
+
+        # Print order details
+        order = message["order"]
+        print("Order Details:")
+        print(f"  Order Type: {order['type']}")
+        print(f"  Provider Name: {order['provider']['descriptor']['name']}")
+        for item in order["items"]:
+            print(f"    Item Name: {item['descriptor']['name']}")
+            print(f"    Price: {item['price']['value']} {item['price']['currency']}")
+            for tag in item["tags"]:
+                print(f"    Tag: {tag['descriptor']['name']}")
+                for detail in tag["list"]:
+                    print(
+                        f"      Detail: {detail['descriptor']['name']} - {detail['value']}"
+                    )
+        print()
+
+
 @app.route("/on_subscribe", methods=["POST"])
 def on_subscribe():
     print("Received a subscription request:", request.json)
@@ -74,6 +125,22 @@ def search():
         response = requests.post("http://localhost:5000/search", json=request_data)
         print("got the data from /search", response.json())
         process_response(response.json())
+        return jsonify(response.json())
+    except Exception as error:
+        print("Error calling external API", error)
+        return jsonify({"error": "Error calling external API"}), 500
+
+
+@app.route("/select", methods=["POST"])
+def select():
+    try:
+        request_data = {
+            "context": request.json.get("context", {}),
+            "message": request.json.get("message", {}),
+        }
+        response = requests.post("http://localhost:5000/select", json=request_data)
+        print("got the data from /select", response.json())
+        print_human_readable(response.json())
         return jsonify(response.json())
     except Exception as error:
         print("Error calling external API", error)
