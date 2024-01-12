@@ -60,7 +60,6 @@ def print_human_readable(json_object):
     context = json_object["context"]
     responses = json_object["responses"]
 
-    # Print context information
     print("Context:")
     print(f"  Action: {context['action']}")
     print(f"  Message ID: {context['message_id']}")
@@ -71,13 +70,11 @@ def print_human_readable(json_object):
     )
     print()
 
-    # Iterate through responses
     for response in responses:
         print("Response:")
         response_context = response["context"]
         message = response["message"]
 
-        # Print response context information
         print(f"  Domain: {response_context['domain']}")
         print(f"  Action: {response_context['action']}")
         print(f"  Provider ID: {response_context['bpp_id']}")
@@ -86,7 +83,6 @@ def print_human_readable(json_object):
         )
         print()
 
-        # Print order details
         order = message["order"]
         print("Order Details:")
         print(f"  Order Type: {order['type']}")
