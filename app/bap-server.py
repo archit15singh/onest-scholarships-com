@@ -1,9 +1,10 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, redirect, url_for, session
 import requests
 import datetime
 import uuid
 
 app = Flask(__name__)
+app.secret_key = "b1c012a6-ab62-4230-83f5-50702cb3097e"
 port = 3000
 
 BAP_ID = "2fe7-2405-201-800b-c21a-2538-43c5-6514-4340.ngrok-free.app"
@@ -35,6 +36,16 @@ def create_request_body(search_string):
 @app.route("/")
 def index():
     return render_template("index.html")
+
+
+@app.route("/details", methods=["GET", "POST"])
+def details():
+    if request.method == "POST":
+        session["application_details"] = request.form.to_dict()
+        return redirect(url_for("details"))
+    return render_template(
+        "details.html", application_details=session.get("application_details")
+    )
 
 
 @app.route("/client_callback", methods=["POST"])

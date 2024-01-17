@@ -124,7 +124,14 @@
                           fulfillments: [{ id: fulfillment.id }],
                           items: [{ id: item.id }],
                         };
-                        console.log(applicationDetails);
+                        $.ajax({
+                          url: "/details",
+                          type: "POST",
+                          data: applicationDetails,
+                          success: function () {
+                            window.location.href = "/details";
+                          },
+                        });
                       });
                       itemDiv.append(applyButton);
 
