@@ -88,11 +88,11 @@
 
                   // Tags Details
                   item.tags.forEach(function(tag) {
-                    htmlContent += '<p>' + tag.descriptor.name + ': ';
+                    htmlContent += '<p>' + tag.descriptor.name + ':</p><ul>';
                     tag.list.forEach(function(tagDetail) {
-                      htmlContent += tagDetail.descriptor.name + ' - ' + tagDetail.value + '; ';
+                      htmlContent += '<li>' + tagDetail.descriptor.name + ': ' + tagDetail.value + '</li>';
                     });
-                    htmlContent += '</p>';
+                    htmlContent += '</ul>';
                   });
 
                   htmlContent += '</div>';
