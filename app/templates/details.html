@@ -31,8 +31,12 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
       $(document).ready(function () {
-        $("#selectButton").click(function () {
+        var selectButton = $("#selectButton");
+
+        selectButton.click(function () {
           var scholarshipDetails = {{ scholarship_details|tojson|safe }};
+
+          selectButton.prop('disabled', true).text('Loading...');
 
           $.ajax({
             url: '/select',
@@ -41,9 +45,11 @@
             data: JSON.stringify(scholarshipDetails),
             success: function (response) {
               console.log("Server response:", response);
+              selectButton.prop('disabled', false).text('Select');
             },
             error: function (error) {
               console.error("Error:", error);
+              selectButton.prop('disabled', false).text('Select');
             }
           });
         });
