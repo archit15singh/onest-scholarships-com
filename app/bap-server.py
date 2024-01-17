@@ -143,5 +143,20 @@ def select():
         return jsonify({"error": "Error calling external API"}), 500
 
 
+@app.route("/init", methods=["POST"])
+def init():
+    try:
+        request_data = {
+            "context": request.json.get("context", {}),
+            "message": request.json.get("message", {}),
+        }
+        response = requests.post("http://localhost:5000/init", json=request_data)
+        print("got the data from /init", response.json())
+        return jsonify(response.json())
+    except Exception as error:
+        print("Error calling external API", error)
+        return jsonify({"error": "Error calling external API"}), 500
+
+
 if __name__ == "__main__":
     app.run(port=port, debug=True)
