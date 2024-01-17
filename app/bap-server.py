@@ -1,15 +1,40 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import requests
-from datetime import datetime
+import datetime
+import uuid
 
 app = Flask(__name__)
 port = 3000
 
+BAP_ID = "2fe7-2405-201-800b-c21a-2538-43c5-6514-4340.ngrok-free.app"
+BAP_URI = "https://2fe7-2405-201-800b-c21a-2538-43c5-6514-4340.ngrok-free.app/"
 
-@app.route("/on_subscribe", methods=["POST"])
-def on_subscribe():
-    print("Received a subscription request:", request.json)
-    return jsonify({"message": "Subscription successful"})
+
+def create_request_body(search_string):
+    request_body = {
+        "context": {
+            "domain": "onest:financial-support",
+            "location": {
+                "city": {"name": "Bangalore", "code": "std:080"},
+                "country": {"name": "India", "code": "IND"},
+            },
+            "action": "search",
+            "version": "1.1.0",
+            "bap_id": BAP_ID,
+            "bap_uri": BAP_URI,
+            "transaction_id": str(uuid.uuid4()),
+            "message_id": str(uuid.uuid4()),
+            "timestamp": datetime.datetime.utcnow().isoformat() + "Z",
+            "ttl": "PT10M",
+        },
+        "message": {"intent": {"item": {"descriptor": {"name": search_string}}}},
+    }
+    return request_body
+
+
+@app.route("/")
+def index():
+    return render_template("index.html")
 
 
 @app.route("/client_callback", methods=["POST"])
@@ -21,10 +46,8 @@ def client_callback():
 @app.route("/search", methods=["POST"])
 def search():
     try:
-        request_data = {
-            "context": request.json.get("context", {}),
-            "message": request.json.get("message", {}),
-        }
+        search_string = request.get_json().get("searchQuery")
+        request_data = create_request_body(search_string)
         response = requests.post("http://localhost:5000/search", json=request_data)
         print("got the data from /search", response.json())
         return jsonify(response.json())

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Scholarship Seeker Application</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  </head>
+  <body>
+    <h1>Scholarship Seeker</h1>
+
+    <form id="searchForm" method="post">
+      <input type="text" name="query" placeholder="Search Scholarships" />
+      <button type="submit">Search</button>
+    </form>
+
+    <div id="searchResults"></div>
+
+    <script>
+      $(document).ready(function () {
+        $("#searchForm").submit(function (event) {
+          event.preventDefault();
+          var searchQuery = $('input[name="query"]').val();
+          var searchButton = $(this).find('button[type="submit"]');
+
+          if (!searchQuery.trim()) {
+            alert("Please enter a search query.");
+            return;
+          }
+
+          searchButton.text("Loading...").prop("disabled", true);
+
+          $.ajax({
+            url: "/search",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({ searchQuery: searchQuery }),
+            success: function (response) {
+              $("#searchResults").empty();
+
+              response.responses.forEach(function (responseItem) {
+                var bppId = responseItem.context.bpp_id;
+                var bppUri = responseItem.context.bpp_uri;
+                var bppDiv = $("<div></div>").addClass("bpp-info");
+                bppDiv.append($("<h4></h4>").text("BPP ID: " + bppId));
+                bppDiv.append($("<h4></h4>").text("BPP URI: " + bppUri));
+                $("#searchResults").append(bppDiv);
+
+                var catalogDescriptor =
+                  responseItem.message.catalog.descriptor.name;
+                var descriptorDiv =
+                  $("<div></div>").addClass("catalog-descriptor");
+                descriptorDiv.append($("<h2></h2>").text(catalogDescriptor));
+                $("#searchResults").append(descriptorDiv);
+
+                responseItem.message.catalog.providers.forEach(function (
+                  provider
+                ) {
+                  var providerDiv = $("<div></div>").addClass("provider");
+                  providerDiv.append(
+                    $("<h3></h3>").text(provider.descriptor.name)
+                  );
+
+                  provider.items.forEach(function (item) {
+                    var itemDiv = $("<div></div>").addClass("item");
+                    itemDiv.append($("<h4></h4>").text(item.descriptor.name));
+                    itemDiv.append(
+                      $("<p></p>").text(item.descriptor.long_desc)
+                    );
+                    itemDiv.append(
+                      $("<p></p>").text(
+                        "Scholarship Amount: " +
+                          item.price.value +
+                          " " +
+                          item.price.currency
+                      )
+                    );
+
+                    provider.fulfillments.forEach(function (fulfillment) {
+                      var startDate = new Date(
+                        fulfillment.stops.find(
+                          (s) => s.type === "APPLICATION-START"
+                        ).time.timestamp
+                      ).toLocaleDateString();
+                      var endDate = new Date(
+                        fulfillment.stops.find(
+                          (s) => s.type === "APPLICATION-END"
+                        ).time.timestamp
+                      ).toLocaleDateString();
+                      itemDiv.append(
+                        $("<p></p>").text(
+                          "Application Period: " + startDate + " to " + endDate
+                        )
+                      );
+                      itemDiv.append(
+                        $("<p></p>").text(
+                          "Contact Email: " + fulfillment.contact.email
+                        )
+                      );
+                      itemDiv.append(
+                        $("<p></p>").text(
+                          "Contact Phone: " + fulfillment.contact.phone
+                        )
+                      );
+
+                      var applyButton = $("<button></button>")
+                        .text("Apply")
+                        .addClass("apply-button");
+                      itemDiv.append(applyButton);
+                    });
+
+                    providerDiv.append(itemDiv);
+                  });
+
+                  $("#searchResults").append(providerDiv);
+                });
+              });
+
+              if (!response.responses.length) {
+                $("#searchResults").append("<p>No scholarships found.</p>");
+              }
+
+              searchButton.text("Search").prop("disabled", false);
+            },
+            error: function (error) {
+              console.error("Error: ", error);
+              $("#searchResults").append("<p>Error fetching data.</p>");
+              searchButton.text("Search").prop("disabled", false);
+            },
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
