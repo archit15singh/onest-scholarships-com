@@ -113,10 +113,10 @@
                         $("<p></p>").text("Fulfillment ID: " + fulfillment.id)
                       );
 
-                      var applyButton = $("<button></button>")
-                        .text("Apply")
-                        .addClass("apply-button");
-                      applyButton.on("click", function () {
+                      var selectButton = $("<button></button>")
+                        .text("select")
+                        .addClass("select-button");
+                      selectButton.on("click", function () {
                         var applicationDetails = {
                           bppId: bppId,
                           bppUri: bppUri,
@@ -133,7 +133,7 @@
                           },
                         });
                       });
-                      itemDiv.append(applyButton);
+                      itemDiv.append(selectButton);
 
                       providerDiv.append(itemDiv);
                     });

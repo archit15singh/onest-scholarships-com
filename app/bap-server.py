@@ -41,10 +41,10 @@ def index():
 @app.route("/details", methods=["GET", "POST"])
 def details():
     if request.method == "POST":
-        session["application_details"] = request.form.to_dict()
+        session["scholarship_details"] = request.form.to_dict()
         return redirect(url_for("details"))
     return render_template(
-        "details.html", application_details=session.get("application_details")
+        "details.html", scholarship_details=session.get("scholarship_details")
     )
 
 
