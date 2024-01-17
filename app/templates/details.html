@@ -2,16 +2,39 @@
 <html>
   <head>
     <title>Scholarship Details</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   </head>
   <body>
     <div class="container">
       <h1>Scholarship Details</h1>
       {% if scholarship_details %}
-      <pre>{{ scholarship_details }}</pre>
+      <h2>BPP ID: {{ scholarship_details['bppId'] }}</h2>
+      <h2>BPP URI: {{ scholarship_details['bppUri'] }}</h2>
+      <h2>Provider ID: {{ scholarship_details['provider']['id'] }}</h2>
+      <h3>Fulfillments:</h3>
+      <ul>
+        {% for fulfillment in scholarship_details['fulfillments'] %}
+        <li>ID: {{ fulfillment['id'] }}</li>
+        {% endfor %}
+      </ul>
+      <h3>Items:</h3>
+      <ul>
+        {% for item in scholarship_details['items'] %}
+        <li>ID: {{ item['id'] }}</li>
+        {% endfor %}
+      </ul>
+      <button id="selectButton">Select</button>
       {% else %}
       <p>No details available.</p>
       {% endif %}
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        $("#selectButton").click(function () {
+          alert("Details selected!");
+        });
+      });
+    </script>
   </body>
 </html>

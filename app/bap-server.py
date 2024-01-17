@@ -43,9 +43,8 @@ def details():
     if request.method == "POST":
         session["scholarship_details"] = request.get_json()
         return redirect(url_for("details"))
-    return render_template(
-        "details.html", scholarship_details=session.get("scholarship_details")
-    )
+    scholarship_details = session.get("scholarship_details", {})
+    return render_template("details.html", scholarship_details=scholarship_details)
 
 
 @app.route("/client_callback", methods=["POST"])
