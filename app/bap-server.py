@@ -11,7 +11,7 @@ BAP_ID = "2fe7-2405-201-800b-c21a-2538-43c5-6514-4340.ngrok-free.app"
 BAP_URI = "https://2fe7-2405-201-800b-c21a-2538-43c5-6514-4340.ngrok-free.app/"
 
 
-def create_request_body(search_string):
+def create_request_body_for_search(search_string):
     request_body = {
         "context": {
             "domain": "onest:financial-support",
@@ -41,7 +41,7 @@ def index():
 @app.route("/details", methods=["GET", "POST"])
 def details():
     if request.method == "POST":
-        session["scholarship_details"] = request.form.to_dict()
+        session["scholarship_details"] = request.get_json()
         return redirect(url_for("details"))
     return render_template(
         "details.html", scholarship_details=session.get("scholarship_details")
@@ -58,13 +58,20 @@ def client_callback():
 def search():
     try:
         search_string = request.get_json().get("searchQuery")
-        request_data = create_request_body(search_string)
+        request_data = create_request_body_for_search(search_string)
         response = requests.post("http://localhost:5000/search", json=request_data)
         print("got the data from /search", response.json())
         return jsonify(response.json())
     except Exception as error:
         print("Error calling external API", error)
         return jsonify({"error": "Error calling external API"}), 500
+
+
+@app.route("/dummy", methods=["POST"])
+def dummy():
+    scholarship_details = request.json
+    print("Received scholarship details:", scholarship_details)
+    return jsonify({"status": "Success", "message": "Data received"})
 
 
 @app.route("/select", methods=["POST"])

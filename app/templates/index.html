@@ -127,7 +127,8 @@
                         $.ajax({
                           url: "/details",
                           type: "POST",
-                          data: applicationDetails,
+                          contentType: "application/json",
+                          data: JSON.stringify(applicationDetails),
                           success: function () {
                             window.location.href = "/details";
                           },

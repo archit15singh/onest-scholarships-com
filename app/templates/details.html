@@ -2,16 +2,14 @@
 <html>
   <head>
     <title>Scholarship Details</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   </head>
   <body>
     <div class="container">
       <h1>Scholarship Details</h1>
-      {% if scholarship_details %} {% for key, value in
-      scholarship_details.items() %}
-      <div class="detail">
-        <span class="detail-key">{{ key }}:</span> {{ value }}
-      </div>
-      {% endfor %} {% else %}
+      {% if scholarship_details %}
+      <pre>{{ scholarship_details }}</pre>
+      {% else %}
       <p>No details available.</p>
       {% endif %}
     </div>
