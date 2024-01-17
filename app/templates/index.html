@@ -58,7 +58,7 @@
                   providerDiv.append(
                     $("<h3></h3>").text(
                       provider.descriptor.name +
-                        " (provider ID: " +
+                        " (Provider ID: " +
                         provider.id +
                         ")"
                     )
@@ -68,7 +68,7 @@
                     var itemDiv = $("<div></div>").addClass("item");
                     itemDiv.append(
                       $("<h4></h4>").text(
-                        item.descriptor.name + " (item ID: " + item.id + ")"
+                        item.descriptor.name + " (Item ID: " + item.id + ")"
                       )
                     );
                     itemDiv.append(
@@ -116,13 +116,23 @@
                       var applyButton = $("<button></button>")
                         .text("Apply")
                         .addClass("apply-button");
+                      applyButton.on("click", function () {
+                        var applicationDetails = {
+                          bppId: bppId,
+                          bppUri: bppUri,
+                          provider: { id: provider.id },
+                          fulfillments: [{ id: fulfillment.id }],
+                          items: [{ id: item.id }],
+                        };
+                        console.log(applicationDetails);
+                      });
                       itemDiv.append(applyButton);
+
+                      providerDiv.append(itemDiv);
                     });
 
-                    providerDiv.append(itemDiv);
+                    $("#searchResults").append(providerDiv);
                   });
-
-                  $("#searchResults").append(providerDiv);
                 });
               });
 
