@@ -26,6 +26,7 @@
       {% else %}
       <p>No details available.</p>
       {% endif %}
+      <div id="scholarshipDetails"></div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -35,7 +36,6 @@
 
         selectButton.click(function () {
           var scholarshipDetails = {{ scholarship_details|tojson|safe }};
-
           selectButton.prop('disabled', true).text('Loading...');
 
           $.ajax({
@@ -44,7 +44,7 @@
             contentType: 'application/json',
             data: JSON.stringify(scholarshipDetails),
             success: function (response) {
-              console.log("Server response:", response);
+              renderResponse(response);
               selectButton.prop('disabled', false).text('Select');
             },
             error: function (error) {
@@ -53,6 +53,59 @@
             }
           });
         });
+
+        function renderResponse(data) {
+          var htmlContent = '';
+          if (data && data.responses && data.responses.length > 0) {
+            data.responses.forEach(function(resp) {
+              if (resp.message && resp.message.order) {
+                var order = resp.message.order;
+
+                // Provider Details
+                htmlContent += '<h3>Provider:</h3>';
+                htmlContent += '<p>Name: ' + order.provider.descriptor.name + '</p>';
+                htmlContent += '<p>Short Description: ' + order.provider.descriptor.short_desc + '</p>';
+                htmlContent += '<p>Provider ID: ' + order.provider.id + '</p>';
+
+                // Fulfillments Details
+                htmlContent += '<h3>Fulfillments:</h3>';
+                order.fulfillments.forEach(function(fulfillment) {
+                  htmlContent += '<div>';
+                  htmlContent += '<p>ID: ' + fulfillment.id + '</p>';
+                  htmlContent += '<p>Email: ' + fulfillment.contact.email + '</p>';
+                  htmlContent += '<p>Phone: ' + fulfillment.contact.phone + '</p>';
+                  htmlContent += '<p>Type: ' + fulfillment.type + '</p>';
+                  htmlContent += '</div>';
+                });
+
+                // Items Details
+                htmlContent += '<h3>Items:</h3>';
+                order.items.forEach(function(item) {
+                  htmlContent += '<div>';
+                  htmlContent += '<p>Name: ' + item.descriptor.name + '</p>';
+                  htmlContent += '<p>Short Description: ' + item.descriptor.short_desc + '</p>';
+                  htmlContent += '<p>Price: ' + item.price.value + ' ' + item.price.currency + '</p>';
+
+                  // Tags Details
+                  item.tags.forEach(function(tag) {
+                    htmlContent += '<p>' + tag.descriptor.name + ': ';
+                    tag.list.forEach(function(tagDetail) {
+                      htmlContent += tagDetail.descriptor.name + ' - ' + tagDetail.value + '; ';
+                    });
+                    htmlContent += '</p>';
+                  });
+
+                  htmlContent += '</div>';
+                });
+
+                htmlContent += '<hr>';
+              }
+            });
+          } else {
+            htmlContent = '<p>No details available.</p>';
+          }
+          $("#scholarshipDetails").html(htmlContent);
+        }
       });
     </script>
   </body>
