@@ -57,11 +57,12 @@
         function renderResponse(data) {
           var htmlContent = '';
           if (data && data.responses && data.responses.length > 0) {
-            data.responses.forEach(function(resp) {
+            data.responses.forEach(function(resp, index) {
               if (resp.message && resp.message.order) {
                 var order = resp.message.order;
 
                 // Provider Details
+                htmlContent += '<div class="order-details">';
                 htmlContent += '<h3>Provider:</h3>';
                 htmlContent += '<p>Name: ' + order.provider.descriptor.name + '</p>';
                 htmlContent += '<p>Short Description: ' + order.provider.descriptor.short_desc + '</p>';
@@ -98,7 +99,9 @@
                   htmlContent += '</div>';
                 });
 
-                htmlContent += '<hr>';
+                // Init Button for each response
+                htmlContent += '<button class="initButton" data-index="' + index + '">Init</button>';
+                htmlContent += '</div><hr>';
               }
             });
           } else {
@@ -106,6 +109,13 @@
           }
           $("#scholarshipDetails").html(htmlContent);
         }
+
+        // Handling click event for Init buttons
+        $(document).on('click', '.initButton', function() {
+          var index = $(this).data('index');
+          // Implement your logic here for the Init button action
+          console.log('Init button clicked for response index:', index);
+        });
       });
     </script>
   </body>
