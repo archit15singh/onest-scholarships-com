@@ -22,7 +22,7 @@
         <li>ID: {{ item['id'] }}</li>
         {% endfor %}
       </ul>
-      <button id="selectButton">Select</button>
+      <button id="selectButton">select</button>
       {% else %}
       <p>No details available.</p>
       {% endif %}
@@ -32,7 +32,20 @@
     <script>
       $(document).ready(function () {
         $("#selectButton").click(function () {
-          alert("Details selected!");
+          var scholarshipDetails = {{ scholarship_details|tojson|safe }};
+
+          $.ajax({
+            url: '/select',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(scholarshipDetails),
+            success: function (response) {
+              console.log("Server response:", response);
+            },
+            error: function (error) {
+              console.error("Error:", error);
+            }
+          });
         });
       });
     </script>
