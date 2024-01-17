@@ -56,12 +56,21 @@
                 ) {
                   var providerDiv = $("<div></div>").addClass("provider");
                   providerDiv.append(
-                    $("<h3></h3>").text(provider.descriptor.name)
+                    $("<h3></h3>").text(
+                      provider.descriptor.name +
+                        " (provider ID: " +
+                        provider.id +
+                        ")"
+                    )
                   );
 
                   provider.items.forEach(function (item) {
                     var itemDiv = $("<div></div>").addClass("item");
-                    itemDiv.append($("<h4></h4>").text(item.descriptor.name));
+                    itemDiv.append(
+                      $("<h4></h4>").text(
+                        item.descriptor.name + " (item ID: " + item.id + ")"
+                      )
+                    );
                     itemDiv.append(
                       $("<p></p>").text(item.descriptor.long_desc)
                     );
@@ -99,6 +108,9 @@
                         $("<p></p>").text(
                           "Contact Phone: " + fulfillment.contact.phone
                         )
+                      );
+                      itemDiv.append(
+                        $("<p></p>").text("Fulfillment ID: " + fulfillment.id)
                       );
 
                       var applyButton = $("<button></button>")
