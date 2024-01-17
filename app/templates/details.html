@@ -57,11 +57,18 @@
         function renderResponse(data) {
           var htmlContent = '';
           if (data && data.responses && data.responses.length > 0) {
-            data.responses.forEach(function(resp, index) {
-              if (resp.message && resp.message.order) {
+            data.responses.forEach(function(resp) {
+              if (resp.context && resp.message && resp.message.order) {
                 var order = resp.message.order;
 
-                // Provider Details
+                // BPP Details
+                htmlContent += '<div class="bpp-details">';
+                htmlContent += '<h3>BPP Details:</h3>';
+                htmlContent += '<p>BPP ID: ' + resp.context.bpp_id + '</p>';
+                htmlContent += '<p>BPP URI: ' + resp.context.bpp_uri + '</p>';
+                htmlContent += '</div>';
+
+                // Order Details
                 htmlContent += '<div class="order-details">';
                 htmlContent += '<h3>Provider:</h3>';
                 htmlContent += '<p>Name: ' + order.provider.descriptor.name + '</p>';
@@ -99,8 +106,9 @@
                   htmlContent += '</div>';
                 });
 
-                // Init Button for each response
-                htmlContent += '<button class="initButton" data-index="' + index + '">Init</button>';
+                // Init Button
+                htmlContent += '<button class="initButton">Init</button>';
+
                 htmlContent += '</div><hr>';
               }
             });
@@ -109,13 +117,6 @@
           }
           $("#scholarshipDetails").html(htmlContent);
         }
-
-        // Handling click event for Init buttons
-        $(document).on('click', '.initButton', function() {
-          var index = $(this).data('index');
-          // Implement your logic here for the Init button action
-          console.log('Init button clicked for response index:', index);
-        });
       });
     </script>
   </body>
