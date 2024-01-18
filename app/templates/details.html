@@ -123,7 +123,9 @@
                     contentType: 'application/json',
                     data: JSON.stringify(requestBody),
                     success: function (response) {
-                        console.log("Init successful: ", response);
+                        sessionStorage.setItem('initResponse', JSON.stringify(response));
+
+                        window.location.href = '/init_details';
                     },
                     error: function (error) {
                         console.error("Init failed: ", error);

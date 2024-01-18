@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Init Details</title>
+  </head>
+  <body>
+    <div id="responseContent"></div>
+
+    <script>
+      window.onload = function () {
+        var responseData = JSON.parse(sessionStorage.getItem("initResponse"));
+
+        if (responseData) {
+          document.getElementById("responseContent").innerHTML = JSON.stringify(
+            responseData,
+            null,
+            2
+          );
+        } else {
+          document.getElementById("responseContent").innerHTML =
+            "No data available";
+        }
+      };
+    </script>
+  </body>
+</html>

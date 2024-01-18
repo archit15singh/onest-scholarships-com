@@ -98,6 +98,11 @@ def details():
     return render_template("details.html", scholarship_details=scholarship_details)
 
 
+@app.route("/init_details")
+def init_details():
+    return render_template("init_details.html")
+
+
 @app.route("/client_callback", methods=["POST"])
 def client_callback():
     print("Received a response for client_callback:", request.json)
