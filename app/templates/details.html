@@ -61,13 +61,11 @@
                       if (resp.message && resp.message.order) {
                           var order = resp.message.order;
 
-                          // Provider Details
                           htmlContent += '<h3>Provider:</h3>';
                           htmlContent += '<p>Name: ' + order.provider.descriptor.name + '</p>';
                           htmlContent += '<p>Short Description: ' + order.provider.descriptor.short_desc + '</p>';
                           htmlContent += '<p>Provider ID: ' + order.provider.id + '</p>';
 
-                          // Fulfillments Details
                           htmlContent += '<h3>Fulfillments:</h3>';
                           order.fulfillments.forEach(function(fulfillment) {
                               htmlContent += '<div>';
@@ -78,7 +76,6 @@
                               htmlContent += '</div>';
                           });
 
-                          // Items Details
                           htmlContent += '<h3>Items:</h3>';
                           order.items.forEach(function(item) {
                               htmlContent += '<div>';
@@ -86,7 +83,6 @@
                               htmlContent += '<p>Short Description: ' + item.descriptor.short_desc + '</p>';
                               htmlContent += '<p>Price: ' + item.price.value + ' ' + item.price.currency + '</p>';
 
-                              // Tags Details
                               item.tags.forEach(function(tag) {
                                   htmlContent += '<p>' + tag.descriptor.name + ':</p><ul>';
                                   tag.list.forEach(function(tagDetail) {
@@ -98,7 +94,6 @@
                               htmlContent += '</div>';
                           });
 
-                          // Init Button
                           htmlContent += '<button class="initButton" data-index="' + index + '">Init</button>';
 
                           htmlContent += '<hr>';
@@ -109,25 +104,21 @@
               }
               $("#scholarshipDetails").html(htmlContent);
 
-              // Init Button Click Event
               $(".initButton").click(function() {
                 var index = $(this).data("index");
                 var currentObject = data.responses[index];
 
-                // Extract BPP ID and URI from the response context
                 var bppId = currentObject.context.bpp_id;
                 var bppUri = currentObject.context.bpp_uri;
 
-                // Construct the request body using the 'order' from the message and adding BPP ID and URI
                 var requestBody = currentObject.message.order;
                 requestBody.bpp_id = bppId;
                 requestBody.bpp_uri = bppUri;
 
                 console.log("Request body for init: ", JSON.stringify(requestBody));
 
-                // Call the /init endpoint with the constructed request body
                 $.ajax({
-                    url: '/init', // Replace with your actual endpoint URL
+                    url: '/init',
                     type: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify(requestBody),
