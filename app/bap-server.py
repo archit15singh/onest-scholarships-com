@@ -84,6 +84,32 @@ def create_request_body_for_init(order_details):
     return request_body
 
 
+def create_request_body_for_confirm(order_details):
+    bpp_id = order_details.pop("bpp_id")
+    bpp_uri = order_details.pop("bpp_uri")
+    request_body = {
+        "context": {
+            "domain": "onest:financial-support",
+            "location": {
+                "city": {"name": "Bangalore", "code": "std:080"},
+                "country": {"name": "India", "code": "IND"},
+            },
+            "action": "confirm",
+            "version": "1.1.0",
+            "bap_id": BAP_ID,
+            "bap_uri": BAP_URI,
+            "bpp_id": bpp_id,
+            "bpp_uri": bpp_uri,
+            "transaction_id": "a8aaecca-10b7-4d19-b640-022723112309",
+            "message_id": "a7aaecca-10b7-4d19-b640-b047a7c60009",
+            "timestamp": datetime.datetime.utcnow().isoformat() + "Z",
+            "ttl": "PT10M",
+        },
+        "message": {"order": order_details},
+    }
+    return request_body
+
+
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -107,6 +133,11 @@ def init_details():
 def client_callback():
     print("Received a response for client_callback:", request.json)
     return jsonify({"message": "successful"})
+
+
+@app.route("/confirm_details")
+def confirm_details():
+    return render_template("confirm_details.html")
 
 
 @app.route("/search", methods=["POST"])
@@ -162,6 +193,24 @@ def init():
         # }
         response = requests.post("http://localhost:5000/init", json=request_data)
         print("got the data from /init", response.json())
+        return jsonify(response.json())
+    except Exception as error:
+        print("Error calling external API", error)
+        return jsonify({"error": "Error calling external API"}), 500
+
+
+@app.route("/confirm", methods=["POST"])
+def confirm():
+    try:
+        order_details = request.json
+        request_data = create_request_body_for_confirm(order_details)
+        print(request_data, "\n\n")
+        # request_data = {
+        #     "context": request.json.get("context", {}),
+        #     "message": request.json.get("message", {}),
+        # }
+        response = requests.post("http://localhost:5000/confirm", json=request_data)
+        print("got the data from /confirm", response.json())
         return jsonify(response.json())
     except Exception as error:
         print("Error calling external API", error)

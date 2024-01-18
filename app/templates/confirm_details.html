@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Confirmation Details</title>
+  </head>
+  <body>
+    <h1>Confirmation Details</h1>
+    <div id="confirmationContent"></div>
+
+    <script>
+      window.onload = function () {
+        var confirmData = JSON.parse(sessionStorage.getItem("confirmDetails"));
+        var confirmContainer = document.getElementById("confirmationContent");
+
+        if (confirmData) {
+          var content = "<div>";
+
+          content += "<h2>Context:</h2>";
+          content += "<p>Action: " + confirmData.context.action + "</p>";
+          content += "<p>BAP ID: " + confirmData.context.bap_id + "</p>";
+          content += "<p>BAP URI: " + confirmData.context.bap_uri + "</p>";
+          content += "<p>BPP ID: " + confirmData.context.bpp_id + "</p>";
+          content += "<p>BPP URI: " + confirmData.context.bpp_uri + "</p>";
+          content += "<p>Domain: " + confirmData.context.domain + "</p>";
+          content +=
+            "<p>Location: City - " +
+            confirmData.context.location.city.name +
+            ", Country - " +
+            confirmData.context.location.country.name +
+            "</p>";
+
+          confirmData.responses.forEach(function (response, index) {
+            content += "<h2>Response " + (index + 1) + ":</h2>";
+            content += "<h3>Order Details:</h3>";
+            var order = response.message.order;
+
+            order.fulfillments.forEach(function (fulfillment) {
+              content += "<h4>Fulfillment:</h4>";
+              content += "<p>ID: " + fulfillment.id + "</p>";
+              content += "<p>Email: " + fulfillment.contact.email + "</p>";
+              content += "<p>Phone: " + fulfillment.contact.phone + "</p>";
+            });
+
+            order.items.forEach(function (item) {
+              content += "<h4>Item:</h4>";
+              content += "<p>Name: " + item.descriptor.name + "</p>";
+              content +=
+                "<p>Short Description: " + item.descriptor.short_desc + "</p>";
+              content +=
+                "<p>Price: " +
+                item.price.value +
+                " " +
+                item.price.currency +
+                "</p>";
+            });
+
+            content += "<h4>Provider:</h4>";
+            content += "<p>Name: " + order.provider.descriptor.name + "</p>";
+            content +=
+              "<p>Short Description: " +
+              order.provider.descriptor.short_desc +
+              "</p>";
+          });
+
+          content += "</div>";
+          confirmContainer.innerHTML = content;
+        } else {
+          confirmContainer.innerHTML =
+            "<p>No confirmation details available.</p>";
+        }
+      };
+    </script>
+  </body>
+</html>

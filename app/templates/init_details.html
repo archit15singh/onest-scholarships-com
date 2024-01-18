@@ -17,7 +17,6 @@
 
             if (response.message && response.message.order) {
               var order = response.message.order;
-
               var orderDiv = document.createElement("div");
               orderDiv.innerHTML = "<div>Order Details:</div>";
 
@@ -86,7 +85,32 @@
         }
 
         function confirmResponse(responseIndex) {
-          alert("Confirmed response #" + (responseIndex + 1));
+          var selectedResponse = responseData.responses[responseIndex];
+          var requestBody = {
+            message: selectedResponse.message,
+            bpp_id: selectedResponse.context.bpp_id,
+            bpp_uri: selectedResponse.context.bpp_uri,
+          };
+
+          postConfirmRequest(requestBody).then((apiResponse) => {
+            sessionStorage.setItem(
+              "confirmDetails",
+              JSON.stringify(apiResponse)
+            );
+            window.location.href = "/confirm_details";
+          });
+        }
+
+        function postConfirmRequest(requestBody) {
+          return fetch("/confirm", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(requestBody),
+          })
+            .then((response) => response.json())
+            .catch((error) => console.error("Error:", error));
         }
       };
     </script>
