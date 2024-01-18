@@ -2,23 +2,69 @@
 <html>
   <head>
     <title>Init Details</title>
+    <style>
+      .container {
+        margin-bottom: 20px;
+      }
+      .key {
+        font-weight: bold;
+      }
+      ul {
+        list-style-type: none;
+        padding: 0;
+      }
+      li {
+        margin-bottom: 5px;
+      }
+    </style>
   </head>
   <body>
     <div id="responseContent"></div>
 
     <script>
+      function createHtmlForResponse(response) {
+        var container = document.createElement("div");
+        container.className = "container";
+
+        for (var key in response) {
+          if (response.hasOwnProperty(key)) {
+            var value = response[key];
+
+            // Check if value is an object or an array, and handle recursively
+            if (typeof value === "object" && value !== null) {
+              var subContainer = createHtmlForResponse(value); // Recursive call for nested objects
+              var keyElement = document.createElement("p");
+              keyElement.className = "key";
+              keyElement.textContent = key + ":";
+              container.appendChild(keyElement);
+              container.appendChild(subContainer);
+            } else {
+              // Handle primitive values (string, number, boolean)
+              var listItem = document.createElement("li");
+              listItem.innerHTML =
+                '<span class="key">' + key + ":</span> " + value;
+              container.appendChild(listItem);
+            }
+          }
+        }
+        return container;
+      }
+
       window.onload = function () {
         var responseData = JSON.parse(sessionStorage.getItem("initResponse"));
+        var contentDiv = document.getElementById("responseContent");
 
-        if (responseData) {
-          document.getElementById("responseContent").innerHTML = JSON.stringify(
-            responseData,
-            null,
-            2
-          );
+        if (
+          responseData &&
+          responseData.responses &&
+          responseData.responses.length > 0
+        ) {
+          responseData.responses.forEach(function (response) {
+            var responseHtml = createHtmlForResponse(response);
+            contentDiv.appendChild(responseHtml);
+          });
         } else {
-          document.getElementById("responseContent").innerHTML =
-            "No data available";
+          contentDiv.innerHTML = "No data available";
         }
       };
     </script>
