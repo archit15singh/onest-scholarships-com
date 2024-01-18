@@ -32,91 +32,114 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
       $(document).ready(function () {
-        var selectButton = $("#selectButton");
+          var selectButton = $("#selectButton");
 
-        selectButton.click(function () {
-          var scholarshipDetails = {{ scholarship_details|tojson|safe }};
-          selectButton.prop('disabled', true).text('Loading...');
+          selectButton.click(function () {
+              var scholarshipDetails = {{ scholarship_details|tojson|safe }};
+              selectButton.prop('disabled', true).text('Loading...');
 
-          $.ajax({
-            url: '/select',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(scholarshipDetails),
-            success: function (response) {
-              renderResponse(response);
-              selectButton.prop('disabled', false).text('Select');
-            },
-            error: function (error) {
-              console.error("Error:", error);
-              selectButton.prop('disabled', false).text('Select');
-            }
+              $.ajax({
+                  url: '/select',
+                  type: 'POST',
+                  contentType: 'application/json',
+                  data: JSON.stringify(scholarshipDetails),
+                  success: function (response) {
+                      renderResponse(response);
+                      selectButton.prop('disabled', false).text('Select');
+                  },
+                  error: function (error) {
+                      console.error("Error:", error);
+                      selectButton.prop('disabled', false).text('Select');
+                  }
+              });
           });
-        });
 
-        function renderResponse(data) {
-          var htmlContent = '';
-          if (data && data.responses && data.responses.length > 0) {
-            data.responses.forEach(function(resp) {
-              if (resp.context && resp.message && resp.message.order) {
-                var order = resp.message.order;
+          function renderResponse(data) {
+              var htmlContent = '';
+              if (data && data.responses && data.responses.length > 0) {
+                  data.responses.forEach(function(resp, index) {
+                      if (resp.message && resp.message.order) {
+                          var order = resp.message.order;
 
-                // BPP Details
-                htmlContent += '<div class="bpp-details">';
-                htmlContent += '<h3>BPP Details:</h3>';
-                htmlContent += '<p>BPP ID: ' + resp.context.bpp_id + '</p>';
-                htmlContent += '<p>BPP URI: ' + resp.context.bpp_uri + '</p>';
-                htmlContent += '</div>';
+                          // Provider Details
+                          htmlContent += '<h3>Provider:</h3>';
+                          htmlContent += '<p>Name: ' + order.provider.descriptor.name + '</p>';
+                          htmlContent += '<p>Short Description: ' + order.provider.descriptor.short_desc + '</p>';
+                          htmlContent += '<p>Provider ID: ' + order.provider.id + '</p>';
 
-                // Order Details
-                htmlContent += '<div class="order-details">';
-                htmlContent += '<h3>Provider:</h3>';
-                htmlContent += '<p>Name: ' + order.provider.descriptor.name + '</p>';
-                htmlContent += '<p>Short Description: ' + order.provider.descriptor.short_desc + '</p>';
-                htmlContent += '<p>Provider ID: ' + order.provider.id + '</p>';
+                          // Fulfillments Details
+                          htmlContent += '<h3>Fulfillments:</h3>';
+                          order.fulfillments.forEach(function(fulfillment) {
+                              htmlContent += '<div>';
+                              htmlContent += '<p>ID: ' + fulfillment.id + '</p>';
+                              htmlContent += '<p>Email: ' + fulfillment.contact.email + '</p>';
+                              htmlContent += '<p>Phone: ' + fulfillment.contact.phone + '</p>';
+                              htmlContent += '<p>Type: ' + fulfillment.type + '</p>';
+                              htmlContent += '</div>';
+                          });
 
-                // Fulfillments Details
-                htmlContent += '<h3>Fulfillments:</h3>';
-                order.fulfillments.forEach(function(fulfillment) {
-                  htmlContent += '<div>';
-                  htmlContent += '<p>ID: ' + fulfillment.id + '</p>';
-                  htmlContent += '<p>Email: ' + fulfillment.contact.email + '</p>';
-                  htmlContent += '<p>Phone: ' + fulfillment.contact.phone + '</p>';
-                  htmlContent += '<p>Type: ' + fulfillment.type + '</p>';
-                  htmlContent += '</div>';
-                });
+                          // Items Details
+                          htmlContent += '<h3>Items:</h3>';
+                          order.items.forEach(function(item) {
+                              htmlContent += '<div>';
+                              htmlContent += '<p>Name: ' + item.descriptor.name + '</p>';
+                              htmlContent += '<p>Short Description: ' + item.descriptor.short_desc + '</p>';
+                              htmlContent += '<p>Price: ' + item.price.value + ' ' + item.price.currency + '</p>';
 
-                // Items Details
-                htmlContent += '<h3>Items:</h3>';
-                order.items.forEach(function(item) {
-                  htmlContent += '<div>';
-                  htmlContent += '<p>Name: ' + item.descriptor.name + '</p>';
-                  htmlContent += '<p>Short Description: ' + item.descriptor.short_desc + '</p>';
-                  htmlContent += '<p>Price: ' + item.price.value + ' ' + item.price.currency + '</p>';
+                              // Tags Details
+                              item.tags.forEach(function(tag) {
+                                  htmlContent += '<p>' + tag.descriptor.name + ':</p><ul>';
+                                  tag.list.forEach(function(tagDetail) {
+                                      htmlContent += '<li>' + tagDetail.descriptor.name + ': ' + tagDetail.value + '</li>';
+                                  });
+                                  htmlContent += '</ul>';
+                              });
 
-                  // Tags Details
-                  item.tags.forEach(function(tag) {
-                    htmlContent += '<p>' + tag.descriptor.name + ':</p><ul>';
-                    tag.list.forEach(function(tagDetail) {
-                      htmlContent += '<li>' + tagDetail.descriptor.name + ': ' + tagDetail.value + '</li>';
-                    });
-                    htmlContent += '</ul>';
+                              htmlContent += '</div>';
+                          });
+
+                          // Init Button
+                          htmlContent += '<button class="initButton" data-index="' + index + '">Init</button>';
+
+                          htmlContent += '<hr>';
+                      }
                   });
-
-                  htmlContent += '</div>';
-                });
-
-                // Init Button
-                htmlContent += '<button class="initButton">init</button>';
-
-                htmlContent += '</div><hr>';
+              } else {
+                  htmlContent = '<p>No details available.</p>';
               }
+              $("#scholarshipDetails").html(htmlContent);
+
+              // Init Button Click Event
+              $(".initButton").click(function() {
+                var index = $(this).data("index");
+                var currentObject = data.responses[index];
+
+                // Extract BPP ID and URI from the response context
+                var bppId = currentObject.context.bpp_id;
+                var bppUri = currentObject.context.bpp_uri;
+
+                // Construct the request body using the 'order' from the message and adding BPP ID and URI
+                var requestBody = currentObject.message.order;
+                requestBody.bpp_id = bppId;
+                requestBody.bpp_uri = bppUri;
+
+                console.log("Request body for init: ", JSON.stringify(requestBody));
+
+                // Call the /init endpoint with the constructed request body
+                $.ajax({
+                    url: '/init', // Replace with your actual endpoint URL
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(requestBody),
+                    success: function (response) {
+                        console.log("Init successful: ", response);
+                    },
+                    error: function (error) {
+                        console.error("Init failed: ", error);
+                    }
+                });
             });
-          } else {
-            htmlContent = '<p>No details available.</p>';
           }
-          $("#scholarshipDetails").html(htmlContent);
-        }
       });
     </script>
   </body>

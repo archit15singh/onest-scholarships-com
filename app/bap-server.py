@@ -58,6 +58,32 @@ def create_request_body_for_select(scholarship_details):
     return request_body
 
 
+def create_request_body_for_init(order_details):
+    bpp_id = order_details.pop("bpp_id")
+    bpp_uri = order_details.pop("bpp_uri")
+    request_body = {
+        "context": {
+            "domain": "onest:financial-support",
+            "location": {
+                "city": {"name": "Bangalore", "code": "std:080"},
+                "country": {"name": "India", "code": "IND"},
+            },
+            "action": "init",
+            "version": "1.1.0",
+            "bap_id": BAP_ID,
+            "bap_uri": BAP_URI,
+            "bpp_id": bpp_id,
+            "bpp_uri": bpp_uri,
+            "transaction_id": "a8aaecca-10b7-4d19-b640-022723112309",
+            "message_id": "a7aaecca-10b7-4d19-b640-b047a7c60009",
+            "timestamp": datetime.datetime.utcnow().isoformat() + "Z",
+            "ttl": "PT10M",
+        },
+        "message": {"order": order_details},
+    }
+    return request_body
+
+
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -122,10 +148,13 @@ def select():
 @app.route("/init", methods=["POST"])
 def init():
     try:
-        request_data = {
-            "context": request.json.get("context", {}),
-            "message": request.json.get("message", {}),
-        }
+        order_details = request.json
+        request_data = create_request_body_for_init(order_details)
+        print(request_data, "\n\n")
+        # request_data = {
+        #     "context": request.json.get("context", {}),
+        #     "message": request.json.get("message", {}),
+        # }
         response = requests.post("http://localhost:5000/init", json=request_data)
         print("got the data from /init", response.json())
         return jsonify(response.json())
