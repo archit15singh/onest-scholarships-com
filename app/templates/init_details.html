@@ -3,18 +3,17 @@
   <head>
     <title>Init Details</title>
     <style>
-      .container {
+      .response-section {
         margin-bottom: 20px;
       }
-      .key {
+      .order,
+      .fulfillment,
+      .item,
+      .provider {
+        margin-left: 20px;
+      }
+      .heading {
         font-weight: bold;
-      }
-      ul {
-        list-style-type: none;
-        padding: 0;
-      }
-      li {
-        margin-bottom: 5px;
       }
     </style>
   </head>
@@ -22,49 +21,81 @@
     <div id="responseContent"></div>
 
     <script>
-      function createHtmlForResponse(response) {
-        var container = document.createElement("div");
-        container.className = "container";
-
-        for (var key in response) {
-          if (response.hasOwnProperty(key)) {
-            var value = response[key];
-
-            // Check if value is an object or an array, and handle recursively
-            if (typeof value === "object" && value !== null) {
-              var subContainer = createHtmlForResponse(value); // Recursive call for nested objects
-              var keyElement = document.createElement("p");
-              keyElement.className = "key";
-              keyElement.textContent = key + ":";
-              container.appendChild(keyElement);
-              container.appendChild(subContainer);
-            } else {
-              // Handle primitive values (string, number, boolean)
-              var listItem = document.createElement("li");
-              listItem.innerHTML =
-                '<span class="key">' + key + ":</span> " + value;
-              container.appendChild(listItem);
-            }
-          }
-        }
-        return container;
-      }
-
       window.onload = function () {
         var responseData = JSON.parse(sessionStorage.getItem("initResponse"));
-        var contentDiv = document.getElementById("responseContent");
+        var responseContainer = document.getElementById("responseContent");
 
-        if (
-          responseData &&
-          responseData.responses &&
-          responseData.responses.length > 0
-        ) {
+        if (responseData && responseData.responses) {
           responseData.responses.forEach(function (response) {
-            var responseHtml = createHtmlForResponse(response);
-            contentDiv.appendChild(responseHtml);
+            var responseDiv = document.createElement("div");
+            responseDiv.className = "response-section";
+
+            if (response.message && response.message.order) {
+              var order = response.message.order;
+
+              // Order Details
+              var orderDiv = document.createElement("div");
+              orderDiv.className = "order";
+              orderDiv.innerHTML = '<div class="heading">Order Details:</div>';
+
+              // Fulfillments
+              order.fulfillments.forEach(function (fulfillment) {
+                var fulfillmentDiv = document.createElement("div");
+                fulfillmentDiv.className = "fulfillment";
+                fulfillmentDiv.innerHTML =
+                  '<div class="heading">Fulfillment:</div>' +
+                  "<p>ID: " +
+                  fulfillment.id +
+                  "</p>" +
+                  "<p>Email: " +
+                  fulfillment.contact.email +
+                  "</p>" +
+                  "<p>Phone: " +
+                  fulfillment.contact.phone +
+                  "</p>";
+                orderDiv.appendChild(fulfillmentDiv);
+              });
+
+              // Items
+              order.items.forEach(function (item) {
+                var itemDiv = document.createElement("div");
+                itemDiv.className = "item";
+                itemDiv.innerHTML =
+                  '<div class="heading">Item:</div>' +
+                  "<p>Name: " +
+                  item.descriptor.name +
+                  "</p>" +
+                  "<p>Short Description: " +
+                  item.descriptor.short_desc +
+                  "</p>" +
+                  "<p>Price: " +
+                  item.price.value +
+                  " " +
+                  item.price.currency +
+                  "</p>";
+                orderDiv.appendChild(itemDiv);
+              });
+
+              // Provider
+              var providerDiv = document.createElement("div");
+              providerDiv.className = "provider";
+              providerDiv.innerHTML =
+                '<div class="heading">Provider:</div>' +
+                "<p>Name: " +
+                order.provider.descriptor.name +
+                "</p>" +
+                "<p>Short Description: " +
+                order.provider.descriptor.short_desc +
+                "</p><hr>";
+              orderDiv.appendChild(providerDiv);
+
+              responseDiv.appendChild(orderDiv);
+            }
+
+            responseContainer.appendChild(responseDiv);
           });
         } else {
-          contentDiv.innerHTML = "No data available";
+          responseContainer.innerHTML = "<p>No data available</p>";
         }
       };
     </script>
