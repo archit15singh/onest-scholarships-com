@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Status Details</title>
+  </head>
+  <body>
+    <h1>Status Details</h1>
+    <div id="statusContent"></div>
+
+    <script>
+      window.onload = function () {
+        var statusData = JSON.parse(sessionStorage.getItem("statusDetails"));
+        var statusContainer = document.getElementById("statusContent");
+
+        if (statusData) {
+          var content = "<div>";
+
+          // Context Information
+          content += "<div class='section'>";
+          Object.keys(statusData.context).forEach(function (key) {
+            content +=
+              "<p>" +
+              key +
+              ": " +
+              JSON.stringify(statusData.context[key]) +
+              "</p>";
+          });
+          content += "</div>";
+
+          // Responses
+          statusData.responses.forEach(function (response, index) {
+            content +=
+              "<div class='section'><h3>Response " + (index + 1) + ":</h3>";
+
+            // Response Context
+            content += "<div class='sub-section'><h4>Response Context:</h4>";
+            Object.keys(response.context).forEach(function (key) {
+              content +=
+                "<p>" +
+                key +
+                ": " +
+                JSON.stringify(response.context[key]) +
+                "</p>";
+            });
+            content += "</div>";
+
+            // Order Details
+            var order = response.message.order;
+            content +=
+              "<div class='sub-section'><h4>Order ID: " +
+              order.id +
+              " - Status: " +
+              order.status +
+              "</h4>";
+
+            // Fulfillments
+            order.fulfillments.forEach(function (fulfillment) {
+              content +=
+                "<div class='item'><strong>Fulfillment ID:</strong> " +
+                fulfillment.id;
+              content +=
+                "<br><strong>Contact Email:</strong> " +
+                fulfillment.contact.email;
+              content +=
+                "<br><strong>Contact Phone:</strong> " +
+                fulfillment.contact.phone;
+              content +=
+                "<br><strong>Fulfillment Type:</strong> " + fulfillment.type;
+              fulfillment.stops.forEach(function (stop) {
+                content +=
+                  "<br><strong>" +
+                  stop.type +
+                  ":</strong> " +
+                  new Date(stop.time.timestamp).toLocaleString();
+              });
+              content += "</div>";
+            });
+
+            // Items
+            order.items.forEach(function (item) {
+              content +=
+                "<div class='item'><strong>Item:</strong> " +
+                item.descriptor.name;
+              content +=
+                "<br><strong>Short Description:</strong> " +
+                item.descriptor.short_desc;
+              content +=
+                "<br><strong>Price:</strong> " +
+                item.price.value +
+                " " +
+                item.price.currency;
+              // Add tags and xinput here if needed
+              content += "</div>";
+            });
+
+            // Provider
+            content +=
+              "<div class='item'><strong>Provider:</strong> " +
+              order.provider.descriptor.name;
+            content +=
+              "<br><strong>Short Description:</strong> " +
+              order.provider.descriptor.short_desc;
+            content += "</div></div>";
+          });
+
+          content += "</div>";
+          statusContainer.innerHTML = content;
+        } else {
+          statusContainer.innerHTML = "<p>No status details available.</p>";
+        }
+      };
+    </script>
+  </body>
+</html>

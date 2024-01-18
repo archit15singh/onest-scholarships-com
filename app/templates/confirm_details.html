@@ -100,7 +100,8 @@
             contentType: "application/json",
             data: JSON.stringify(requestBody),
             success: function (response) {
-              console.log("Status response:", response);
+              sessionStorage.setItem("statusDetails", JSON.stringify(response));
+              window.location.href = "/status_details";
             },
             error: function (error) {
               console.error("Error fetching status:", error);

@@ -166,6 +166,11 @@ def confirm_details():
     return render_template("confirm_details.html")
 
 
+@app.route("/status_details")
+def status_details():
+    return render_template("status_details.html")
+
+
 @app.route("/search", methods=["POST"])
 def search():
     try:
@@ -181,13 +186,6 @@ def search():
     except Exception as error:
         print("Error calling external API", error)
         return jsonify({"error": "Error calling external API"}), 500
-
-
-@app.route("/dummy", methods=["POST"])
-def dummy():
-    scholarship_details = request.json
-    print("Received scholarship details:", scholarship_details)
-    return jsonify({"status": "Success", "message": "Data received"})
 
 
 @app.route("/select", methods=["POST"])
