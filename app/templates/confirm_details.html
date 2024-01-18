@@ -2,6 +2,7 @@
 <html>
   <head>
     <title>Confirmation Details</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   </head>
   <body>
     <h1>Confirmation Details</h1>
@@ -15,6 +16,7 @@
         if (confirmData) {
           var content = "<div>";
 
+          // Context Information
           content += "<h2>Context:</h2>";
           content += "<p>Action: " + confirmData.context.action + "</p>";
           content += "<p>BAP ID: " + confirmData.context.bap_id + "</p>";
@@ -29,11 +31,12 @@
             confirmData.context.location.country.name +
             "</p>";
 
+          // Responses Information
           confirmData.responses.forEach(function (response, index) {
             content += "<h2>Response " + (index + 1) + ":</h2>";
             content += "<h3>Order Details:</h3>";
-            var order = response.message.order;
 
+            var order = response.message.order;
             order.fulfillments.forEach(function (fulfillment) {
               content += "<h4>Fulfillment:</h4>";
               content += "<p>ID: " + fulfillment.id + "</p>";
@@ -60,6 +63,13 @@
               "<p>Short Description: " +
               order.provider.descriptor.short_desc +
               "</p>";
+
+            // Status button
+            content +=
+              '<button class="status-button" onclick="checkStatus(' +
+              index +
+              ')">Status</button>';
+            content += "<hr>"; // Horizontal rule
           });
 
           content += "</div>";
@@ -69,6 +79,37 @@
             "<p>No confirmation details available.</p>";
         }
       };
+
+      function checkStatus(index) {
+        var confirmData = JSON.parse(sessionStorage.getItem("confirmDetails"));
+        if (
+          confirmData &&
+          confirmData.responses &&
+          confirmData.responses[index]
+        ) {
+          var selectedResponse = confirmData.responses[index];
+          var requestBody = {
+            bpp_id: selectedResponse.context.bpp_id,
+            bpp_uri: selectedResponse.context.bpp_uri,
+            order_id: selectedResponse.message.order.id,
+          };
+
+          $.ajax({
+            url: "/status",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(requestBody),
+            success: function (response) {
+              console.log("Status response:", response);
+            },
+            error: function (error) {
+              console.error("Error fetching status:", error);
+            },
+          });
+        } else {
+          console.error("Response data not found for index:", index);
+        }
+      }
     </script>
   </body>
 </html>
