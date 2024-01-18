@@ -2,20 +2,6 @@
 <html>
   <head>
     <title>Init Details</title>
-    <style>
-      .response-section {
-        margin-bottom: 20px;
-      }
-      .order,
-      .fulfillment,
-      .item,
-      .provider {
-        margin-left: 20px;
-      }
-      .heading {
-        font-weight: bold;
-      }
-    </style>
   </head>
   <body>
     <div id="responseContent"></div>
@@ -26,24 +12,19 @@
         var responseContainer = document.getElementById("responseContent");
 
         if (responseData && responseData.responses) {
-          responseData.responses.forEach(function (response) {
+          responseData.responses.forEach(function (response, index) {
             var responseDiv = document.createElement("div");
-            responseDiv.className = "response-section";
 
             if (response.message && response.message.order) {
               var order = response.message.order;
 
-              // Order Details
               var orderDiv = document.createElement("div");
-              orderDiv.className = "order";
-              orderDiv.innerHTML = '<div class="heading">Order Details:</div>';
+              orderDiv.innerHTML = "<div>Order Details:</div>";
 
-              // Fulfillments
               order.fulfillments.forEach(function (fulfillment) {
                 var fulfillmentDiv = document.createElement("div");
-                fulfillmentDiv.className = "fulfillment";
                 fulfillmentDiv.innerHTML =
-                  '<div class="heading">Fulfillment:</div>' +
+                  "<div>Fulfillment:</div>" +
                   "<p>ID: " +
                   fulfillment.id +
                   "</p>" +
@@ -56,12 +37,10 @@
                 orderDiv.appendChild(fulfillmentDiv);
               });
 
-              // Items
               order.items.forEach(function (item) {
                 var itemDiv = document.createElement("div");
-                itemDiv.className = "item";
                 itemDiv.innerHTML =
-                  '<div class="heading">Item:</div>' +
+                  "<div>Item:</div>" +
                   "<p>Name: " +
                   item.descriptor.name +
                   "</p>" +
@@ -76,26 +55,38 @@
                 orderDiv.appendChild(itemDiv);
               });
 
-              // Provider
               var providerDiv = document.createElement("div");
-              providerDiv.className = "provider";
               providerDiv.innerHTML =
-                '<div class="heading">Provider:</div>' +
+                "<div>Provider:</div>" +
                 "<p>Name: " +
                 order.provider.descriptor.name +
                 "</p>" +
                 "<p>Short Description: " +
                 order.provider.descriptor.short_desc +
-                "</p><hr>";
+                "</p>";
               orderDiv.appendChild(providerDiv);
 
               responseDiv.appendChild(orderDiv);
+
+              var confirmButton = document.createElement("button");
+              confirmButton.textContent = "Confirm";
+              confirmButton.onclick = function () {
+                confirmResponse(index);
+              };
+              responseDiv.appendChild(confirmButton);
+
+              var horizontalRule = document.createElement("hr");
+              responseDiv.appendChild(horizontalRule);
             }
 
             responseContainer.appendChild(responseDiv);
           });
         } else {
           responseContainer.innerHTML = "<p>No data available</p>";
+        }
+
+        function confirmResponse(responseIndex) {
+          alert("Confirmed response #" + (responseIndex + 1));
         }
       };
     </script>
