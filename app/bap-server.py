@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for, session
 import requests
+import logging
 import datetime
 
 app = Flask(__name__)
@@ -8,6 +9,22 @@ port = 3000
 
 BAP_ID = "2fe7-2405-201-800b-c21a-2538-43c5-6514-4340.ngrok-free.app"
 BAP_URI = "https://2fe7-2405-201-800b-c21a-2538-43c5-6514-4340.ngrok-free.app/"
+
+
+def log_request():
+    ip = request.remote_addr
+    method = request.method
+    path = request.path
+    body = request.get_data(as_text=True)
+    app.logger.info(f"Request from {ip}: {method} {path}, Body: {body}")
+
+
+@app.before_request
+def before_request_func():
+    log_request()
+
+
+app.logger.setLevel(logging.INFO)
 
 
 def create_request_body_for_search(search_string):
@@ -134,6 +151,13 @@ def create_request_body_for_status(order_details):
         "message": order_details,
     }
     return request_body
+
+
+@app.route("/sockjs-node/info")
+def handle_sockjs_info():
+    timestamp = request.args.get("t")
+    print(f"Received request for /sockjs-node/info with timestamp: {timestamp}")
+    return "ack ok"
 
 
 @app.route("/")
