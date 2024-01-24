@@ -198,12 +198,12 @@ def status_details():
 @app.route("/search", methods=["POST"])
 def search():
     try:
-        search_string = request.get_json().get("searchQuery")
-        request_data = create_request_body_for_search(search_string)
-        # request_data = {
-        #     "context": request.json.get("context", {}),
-        #     "message": request.json.get("message", {}),
-        # }
+        # search_string = request.get_json().get("searchQuery")
+        # request_data = create_request_body_for_search(search_string)
+        request_data = {
+            "context": request.json.get("context", {}),
+            "message": request.json.get("message", {}),
+        }
         response = requests.post("http://localhost:5000/search", json=request_data)
         print("got the data from /search", response.json())
         return jsonify(response.json())
