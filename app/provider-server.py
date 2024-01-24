@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+import requests
 
 app = Flask(__name__)
 app.secret_key = "b1c012a6-ab62-4230-83f5-50702cb3097e"
@@ -104,11 +105,19 @@ search_object = [
 ]
 
 
-@app.route("/search", methods=["POST"])
+@app.route("/on_search", methods=["POST"])
 def search():
     data = request.get_json()
-    print(f"received request body: {data} in /search")
-    return jsonify(search_object)
+    print(f"received request body: {data} in /on_search")
+
+    on_search_url = "http://localhost:8000/on_search"
+
+    try:
+        response = requests.post(on_search_url, json=search_object)
+        response.raise_for_status()
+        return jsonify(response.json())
+    except requests.RequestException as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/client_callback", methods=["POST"])
